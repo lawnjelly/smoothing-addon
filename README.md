@@ -10,6 +10,7 @@ https://hugo.pro/projects/godot-builds/
 ## About
 The smoothing addon adds 2 new nodes to Godot, 'Smoothing' (for 3d) and 'Smoothing2d' (for 2d). They allow for fixed timestep interpolation without writing any code. See here for an explanation of fixed timestep interpolation:<br/>
 https://www.gamedev.net/blogs/entry/2265460-fixing-your-timestep-and-evaluating-godot/
+<br/>
 https://www.youtube.com/watch?v=lWhHBAcH4sM
 
 ## Installation
