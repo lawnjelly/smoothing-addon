@@ -1,6 +1,7 @@
 # smoothing-addon v 1.0.0
 Fixed timestep interpolation gdscript addon for Godot 3.2
-If you find bugs / have suggestions, please add an issue to the issue tracker and I will look into it! :)
+
+_If you find bugs / have suggestions, please add an issue to the issue tracker and I will look into it!_ :)
 
 ## About
 The smoothing addon adds 2 new nodes to Godot, 'Smoothing' (for 3d) and 'Smoothing2d' (for 2d). They allow for fixed timestep interpolation without writing any code. See here for an explanation of fixed timestep interpolation:<br/>
