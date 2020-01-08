@@ -58,7 +58,7 @@ func teleport():
 	m_Angle_prev = m_Angle_curr
 	m_Scale_prev = m_Scale_curr
 
-	# call frame upate to make sure all components of the node are set
+	# call frame update to make sure all components of the node are set
 	_process(0)
 
 	# get back the old flags
