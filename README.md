@@ -1,6 +1,8 @@
 # smoothing-addon v 1.0.0
 Fixed timestep interpolation gdscript addon for Godot 3.2
 
+If you were wondering how to use that new function `Engine.get_physics_interpolation_fraction()` in 3.2, feel free to use this as is, or to get ideas from for your own version. 
+
 _If you find bugs / have suggestions, please add an issue to the issue tracker and I will look into it!_ :)
 
 ## About
@@ -55,7 +57,13 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 
 (in most cases local transform will be the best choice)
 
-Processing will also be turned off automatically for the smoothing nodes if they are hidden (either directly or through a parent).
+### Notes
+
+* Processing will also be turned off automatically for the smoothing nodes if they are hidden (either directly or through a parent).
+* You can also set the target for the smoothing node from script, using the `set_target` function and passing a NodePath argument (e.g. `mynode.get_path()`).
+* If you are using this addon (or indeed your own interpolation using `Engine.get_physics_interpolation_fraction()`), note that you should set `Project Settings->Physics->Common->Physics Jitter Fix` to 0.0.
+
+There is no need for JitterFix when using fixed timestep interpolation, indeed it may interfere with getting a good result.
 
 __This addon is also available as a c++ module (slight differences), see:__
 https://github.com/lawnjelly/godot-smooth
