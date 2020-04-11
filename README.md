@@ -65,5 +65,8 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 
 There is no need for JitterFix when using fixed timestep interpolation, indeed it may interfere with getting a good result.
 
+### Authors
+Lawnjelly, Calinou
+
 __This addon is also available as a c++ module (slight differences), see:__
 https://github.com/lawnjelly/godot-smooth
