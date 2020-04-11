@@ -81,8 +81,7 @@ func _ready():
 	m_Angle_curr = 0
 	m_Angle_prev = 0
 
-	if _m_Target == null:
-		push_error("A target must be defined for the Smoothing2D node to work.")
+	assert(_m_Target != null, "A target must be defined for the Smoothing2D node to work.")
 
 func set_target(new_value):
 	target = new_value

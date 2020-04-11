@@ -71,8 +71,7 @@ func _ready():
 	_m_trCurr = Transform()
 	_m_trPrev = Transform()
 
-	if _m_Target == null:
-		push_error("A target must be defined for the Smoothing node to work.")
+	assert(_m_Target != null, "A target must be defined for the Smoothing node to work.")
 
 func set_target(new_value):
 	target = new_value
