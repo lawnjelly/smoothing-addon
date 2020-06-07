@@ -193,7 +193,7 @@ func _process(_delta):
 
 		# rotate
 		if _TestFlags(SF_ROTATE):
-			var r = _LerpAngle(m_Angle_prev, m_Angle_curr, f)
+			var r = lerp_angle(m_Angle_prev, m_Angle_curr, f)
 			set_global_rotation(r)
 
 		if _TestFlags(SF_SCALE):
@@ -205,7 +205,7 @@ func _process(_delta):
 
 		# rotate
 		if _TestFlags(SF_ROTATE):
-			var r = _LerpAngle(m_Angle_prev, m_Angle_curr, f)
+			var r = lerp_angle(m_Angle_prev, m_Angle_curr, f)
 			set_rotation(r)
 
 		if _TestFlags(SF_SCALE):
@@ -221,14 +221,6 @@ func _physics_process(_delta):
 
 	_SetFlags(SF_DIRTY)
 	pass
-
-func _LerpAngle(var from : float, var to : float, var weight : float)->float:
-	return from + _ShortAngleDist(from, to) * weight
-
-func _ShortAngleDist(var from : float, var to : float)->float:
-	var max_angle : float = 2 * PI
-	var diff : float = fmod(to-from, max_angle)
-	return fmod(2.0 * diff, max_angle) - diff
 
 func _SetFlags(var f):
 	flags |= f
