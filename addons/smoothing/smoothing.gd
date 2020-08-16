@@ -44,23 +44,23 @@ export (int, FLAGS, "enabled", "translate", "basis", "slerp") var flags : int = 
 func teleport():
 	var temp_flags = flags
 	_SetFlags(SF_TRANSLATE | SF_BASIS)
-
+	
 	_RefreshTransform()
 	_m_trPrev = _m_trCurr
-
+	
 	# do one frame update to make sure all components are updated
 	_process(0)
-
+	
 	# resume old flags
 	flags = temp_flags
-
+	
 func set_enabled(var bEnable : bool):
 	_ChangeFlags(SF_ENABLED, bEnable)
 	_SetProcessing()
 
 func is_enabled():
 	return _TestFlags(SF_ENABLED)
-
+	
 
 
 
@@ -71,21 +71,20 @@ func _ready():
 	_m_trCurr = Transform()
 	_m_trPrev = Transform()
 
-	assert(_m_Target != null, "A target must be defined for the Smoothing node to work.")
 
 func set_target(new_value):
 	target = new_value
 	if is_inside_tree():
 		_FindTarget()
-
+	
 func get_target():
 	return target
-
+	
 func _set_flags(new_value):
 	flags = new_value
 	# we may have enabled or disabled
 	_SetProcessing()
-
+	
 func _get_flags():
 	return flags
 
@@ -109,41 +108,69 @@ func _notification(what):
 		NOTIFICATION_VISIBILITY_CHANGED:
 			_ChangeFlags(SF_INVISIBLE, is_visible_in_tree() == false)
 			_SetProcessing()
-
-
+			
+		
 
 func _RefreshTransform():
 	_ClearFlags(SF_DIRTY);
-
+	
 	if _HasTarget() == false:
 		return
-
+	
 	_m_trPrev = _m_trCurr
 	_m_trCurr = _m_Target.transform
+	
+func _IsTargetParent(var node):
+	if node == _m_Target:
+		return true # disallow
+	
+	var parent = node.get_parent()
+	if parent:
+		return _IsTargetParent(parent)
+	
+	return false
 
 
 func _FindTarget():
 	_m_Target = null
 	if target.is_empty():
 		return
-
-	_m_Target = get_node(target)
-
-	if _m_Target is Spatial:
+		
+	var targ = get_node(target)
+	
+	if !targ:
+		printerr("ERROR SmoothingNode : Target " + target + " not found")
 		return
-
-	_m_Target = null
-	#return false
-
-
+	
+	if not targ is Spatial:
+		printerr("ERROR SmoothingNode : Target " + target + " is not spatial")
+		target = ""
+		return
+		
+	# if we got to here targ is a spatial
+	_m_Target = targ
+		
+	# do a final check
+	# is the target a parent or grandparent of the smoothing node?
+	# if so, disallow
+	if _IsTargetParent(self):
+		var msg = _m_Target.get_name() + " assigned to " + self.get_name() + "]"
+		printerr("ERROR SmoothingNode : Target should not be a parent or grandparent [", msg)
+		
+		# error message
+		#OS.alert("Target cannot be a parent or grandparent in the scene tree.", "SmoothingNode")
+		_m_Target = null
+		target = ""
+		return
+	
 func _HasTarget()->bool:
 	if _m_Target == null:
 		return false
-
+	
 	# has not been deleted?
 	if is_instance_valid(_m_Target):
 		return true
-
+		
 	_m_Target = null
 	return false
 
@@ -151,9 +178,9 @@ func _HasTarget()->bool:
 func _process(_delta):
 	if _TestFlags(SF_DIRTY):
 		_RefreshTransform()
-
+	
 	var f = Engine.get_physics_interpolation_fraction()
-
+	
 	var tr : Transform = Transform()
 
 	# translate
@@ -169,15 +196,15 @@ func _process(_delta):
 			tr.basis = _LerpBasis(_m_trPrev.basis, _m_trCurr.basis, f)
 
 	transform = tr
-
+	
 	pass
-
+	
 func _physics_process(_delta):
 	# take care of the special case where multiple physics ticks
 	# occur before a frame .. the data must flow!
 	if _TestFlags(SF_DIRTY):
 		_RefreshTransform()
-
+	
 	_SetFlags(SF_DIRTY)
 	pass
 
@@ -190,10 +217,10 @@ func _LerpBasis(var from : Basis, var to : Basis, var f : float)->Basis:
 
 func _SetFlags(var f):
 	flags |= f
-
+	
 func _ClearFlags(var f):
 	flags &= ~f
-
+	
 func _TestFlags(var f):
 	return (flags & f) == f
 
