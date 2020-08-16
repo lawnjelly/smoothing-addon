@@ -24,7 +24,7 @@ To use the addon in your own project:
 ## Explanation
 In a game you would usually choose to create a Node2D, Spatial, RigidBody, Kinematic body etc node for a game object, which is affected by physics and / or AI and / or player input. This I will refer to as the PHYSICS REP (representation).
 
-The visual respresentation of this object (VISUAL REP) is often simply a child of this node, such as a MeshInstance, or Sprite. That way it inherits the transform of the parent physics rep. When you move the physics rep, the transform propagates to the child node, the visual rep, and it renders in the same place as the physics rep. In some games the VISUAL REP can even be the same node as the PHYSICS REP (particularly when there is no actual physics).
+The visual respresentation of this object (VISUAL REP) is often simply a child of this node, such as a MeshInstance, or Sprite. That way it inherits the transform of the parent physics rep. When you move the physics rep, the transform propagates to the child node, the visual rep, and it renders in the same place as the physics rep. In some games the visual rep can even be the same node as the physics rep (particularly when there is no actual physics).
 
 In order to use interpolation successfully, you have to slightly change mindset. Instead of the visual rep being directly a child of the physics rep, it needs to be a separate node in the scene tree, preferably inheriting no transform from a parent node.
 
