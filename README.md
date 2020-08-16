@@ -21,12 +21,37 @@ To use the addon in your own project:
 3. Go to 'Project Settings' plugins tab.
 4. Find the smoothing plugin and set status to 'Active'.
 
+## Explanation
+In a game you would usually choose to create a Node2D, Spatial, RigidBody, Kinematic body etc node for a game object, which is affected by physics and / or AI and / or player input. This I will refer to as the PHYSICS REP (representation).
+
+The visual respresentation of this object (VISUAL REP) is often simply a child of this node, such as a MeshInstance, or Sprite. That way it inherits the transform of the parent physics rep. When you move the physics rep, the transform propagates to the child node, the visual rep, and it renders in the same place as the physics rep. In some games the VISUAL REP can even be the same node as the PHYSICS REP (particularly when there is no actual physics).
+
+In order to use interpolation successfully, you have to slightly change mindset. Instead of the visual rep being directly a child of the physics rep, it needs to be a separate node in the scene tree, preferably inheriting no transform from a parent node.
+
+e.g. Instead of:
+```
+Root
+    PhysicsRep
+        VisualRep (child of PhysicsRep)
+```
+The relationship becomes:
+```
+Root
+    PhysicsRep
+    VisualRep (child of Root)
+```
+To enable interpolation instead of relying on the scenetree transforms being propagated to children, we specifically tell the VisualRep to follow the PhysicsRep. This way it can follow the position and rotation of the PhysicsRep WITHOUT being directly affected by the transform of the PhysicsRep.
+
+This may sound overly complicated, but because of the 3d maths involved, it is usually essential to getting a good result.
+
+This means in your gameplay programming, 99% of the time you would usually be mostly concerned with the position and rotation of the physics rep. Aside a few things like visual effects, the visual rep will follow the physics rep, and you don't need to worry about it. This also means that providing you drive your gameplay using `_physics_process` rather than `_process`, your gameplay will run the same no matter what machine you run it on! Fantastic.
+
 ## Usage
 
 ### 3D
-1. You would usually in a game choose to create a Spatial, RigidBody, Kinematic body etc node for a game object, and have a visual representation (e.g. a MeshInstance) as a child of this node.
+1. You would usually in a game choose to create a Spatial, RigidBody, Kinematic body etc node for your physics rep, and have a visual representation (e.g. a MeshInstance) as a child of this node.
 2. Do this as normal so that you can see the object moving in the game.
-3. Add the new 'Smoothing' node to the scene.
+3. Add the new 'Smoothing' node to the scene, but _on a different branch_, as shown in the section above.
 4. Drag the visual representation from being a child of the gameobject node, to being a child of the Smoothing node.
 5. The final step is to 'link' the Smoothing node to the gameobject, such that the gameobject is the target, which the smoothing node will follow.
 6. Do this by looking in the inspector panel for the Smoothing node, and select the 'Target' to be the gameobject node.
