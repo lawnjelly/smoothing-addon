@@ -181,17 +181,20 @@ func _FindTarget():
 	# if we got to here targ is correct type
 	_m_Target = targ
 
+	# hard coded to off in 2d to allow this for now
+	# but I'm still not sure it should be allowed...
+
 	# do a final check
 	# is the target a parent or grandparent of the smoothing node?
 	# if so, disallow
-	if _IsTargetParent(self):
-		var msg = _m_Target.get_name() + " assigned to " + self.get_name() + "]"
-		printerr("ERROR SmoothingNode2D : Target should not be a parent or grandparent [", msg)
-		
-		# error message
-		_m_Target = null
-		target = ""
-		return
+#	if _IsTargetParent(self):
+#		var msg = _m_Target.get_name() + " assigned to " + self.get_name() + "]"
+#		printerr("ERROR SmoothingNode2D : Target should not be a parent or grandparent [", msg)
+#
+#		# error message
+#		_m_Target = null
+#		target = ""
+#		return
 
 func _HasTarget()->bool:
 	if _m_Target == null:
