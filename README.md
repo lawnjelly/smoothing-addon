@@ -1,4 +1,4 @@
-# smoothing-addon v 1.0.2
+# smoothing-addon v 1.0.3
 Fixed timestep interpolation gdscript addon for Godot 3.2 (and later versions)
 
 If you were wondering how to use that new function `Engine.get_physics_interpolation_fraction()` in 3.2, feel free to use this as is, or to get ideas from for your own version. 
