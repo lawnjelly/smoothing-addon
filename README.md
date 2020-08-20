@@ -84,7 +84,7 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 
 ### Notes
 
-* Consider the order of processing of nodes. Nodes are processed in the scene tree in depth first order. For best results, the smoothing node should be placed in the scene tree so that it updates _AFTER_ the target node (i.e. lower in the list of scene tree nodes). If it updates before the target node, there may be an unneeded extra delay of one tick.
+* Consider the order of processing of nodes. Nodes are processed in the scene tree in order of their location within the tree (parent, childA, childA children, childB etc). For best results, the smoothing node should be placed in the scene tree so that it updates _AFTER_ the target node (i.e. lower in the list of scene tree nodes). If it updates before the target node, there may be an unneeded extra delay of one tick.
 * Processing will also be turned off automatically for the smoothing nodes if they are hidden (either directly or through a parent).
 * You can also set the target for the smoothing node from script, using the `set_target` function and passing a NodePath argument (e.g. `mynode.get_path()`).
 * If you are using this addon (or indeed your own interpolation using `Engine.get_physics_interpolation_fraction()`), note that you should set `Project Settings->Physics->Common->Physics Jitter Fix` to 0.0.
