@@ -90,6 +90,8 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 * Consider the order of processing of nodes. Nodes are processed in the scene tree in order of their location within the tree (parent, childA, childA children, childB etc). For best results, the smoothing node should be placed in the scene tree so that it updates _AFTER_ the target node (i.e. lower in the list of scene tree nodes). If it updates before the target node, there may be an unneeded extra delay of one tick.
 * Processing will also be turned off automatically for the smoothing nodes if they are hidden (either directly or through a parent).
 * You can also set the target for the smoothing node from script, using the `set_target` function and passing a NodePath argument (e.g. `mynode.get_path()`).
+* The best way to debug / develop smoothing is to set physics ticks per second (`ProjectSettings->Physics->Common->Physics_FPS`) to a low value (e.g. 10). Once you have it working you can set it back up to high value if desired.
+* If you encounter problems smoothing a `Camera2D` node, try setting the `ProcessMode` to `Idle` instead of `Physics`.
 * If you are using this addon (or indeed your own interpolation using `Engine.get_physics_interpolation_fraction()`), note that you should set `Project Settings->Physics->Common->Physics Jitter Fix` to 0.0.
 
 There is no need for JitterFix when using fixed timestep interpolation, indeed it may interfere with getting a good result.
