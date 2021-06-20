@@ -81,7 +81,7 @@ func is_enabled():
 func _ready():
 	m_Angle_curr = 0
 	m_Angle_prev = 0
-	pass
+	set_process_priority(100)
 
 
 func set_target(new_value):
