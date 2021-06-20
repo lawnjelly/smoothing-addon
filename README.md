@@ -1,4 +1,4 @@
-# smoothing-addon v 1.0.3
+# smoothing-addon v 1.0.4
 Fixed timestep interpolation gdscript addon for Godot 3.2 (and later versions)
 
 If you were wondering how to use that new function `Engine.get_physics_interpolation_fraction()` in 3.2, feel free to use this as is, or to get ideas from for your own version. 
@@ -88,6 +88,7 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 ### Notes
 
 * Consider the order of processing of nodes. Nodes are processed in the scene tree in order of their location within the tree (parent, childA, childA children, childB etc). For best results, the smoothing node should be placed in the scene tree so that it updates _AFTER_ the target node (i.e. lower in the list of scene tree nodes). If it updates before the target node, there may be an unneeded extra delay of one tick.
+Update: We now use `set_process_priority` to try and ensure that the smoothing node is processed after the target, so hopefully manual reordering should no longer be necessary.
 * Processing will also be turned off automatically for the smoothing nodes if they are hidden (either directly or through a parent).
 * You can also set the target for the smoothing node from script, using the `set_target` function and passing a NodePath argument (e.g. `mynode.get_path()`).
 * The best way to debug / develop smoothing is to set physics ticks per second (`ProjectSettings->Physics->Common->Physics_FPS`) to a low value (e.g. 10). Once you have it working you can set it back up to high value if desired.
