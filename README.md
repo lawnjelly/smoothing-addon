@@ -92,7 +92,7 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 * The best way to debug / develop smoothing is to set physics ticks per second (`ProjectSettings->Physics->Common->Physics_FPS`) to a low value (e.g. 10). Once you have it working you can set it back up to high value if desired.
 * If you encounter problems smoothing a `Camera2D` node, try setting the `ProcessMode` to `Idle` instead of `Physics`.
 * If you are using this addon (or indeed your own interpolation using `Engine.get_physics_interpolation_fraction()`), note that you should set `Project Settings->Physics->Common->Physics Jitter Fix` to 0.0.
-* In order to prevent an unneeded extra delay of one tick, it is important that smoothing nodes are processed _AFTER_ target nodes. This should now be automatically taken care of by using the `process_priority` of smoothing nodes. Previously we required smoothing nodes to be placed lower in the scene tree than the target. This should hopefully no longer be the case.
+* In order to prevent an unneeded extra delay of one tick, it is important that smoothing nodes are processed _AFTER_ target nodes. This should now be automatically taken care as the addon internally uses `process_priority` to achieve this. Previously we required smoothing nodes to be placed lower in the scene tree than the target. This should hopefully no longer be the case.
 
 There is no need for JitterFix when using fixed timestep interpolation, indeed it may interfere with getting a good result.
 
