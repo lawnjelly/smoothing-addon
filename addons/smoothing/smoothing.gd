@@ -71,6 +71,7 @@ func is_enabled():
 func _ready():
 	_m_trCurr = Transform()
 	_m_trPrev = Transform()
+	set_process_priority(100)
 
 
 func set_target(new_value):
