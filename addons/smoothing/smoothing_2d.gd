@@ -82,6 +82,7 @@ func _ready():
 	m_Angle_curr = 0
 	m_Angle_prev = 0
 	set_process_priority(100)
+	Engine.set_physics_jitter_fix(0.0)
 
 
 func set_target(new_value):
