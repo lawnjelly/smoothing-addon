@@ -72,6 +72,7 @@ func _ready():
 	_m_trCurr = Transform()
 	_m_trPrev = Transform()
 	set_process_priority(100)
+	Engine.set_physics_jitter_fix(0.0)
 
 
 func set_target(new_value):
