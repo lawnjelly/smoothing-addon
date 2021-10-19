@@ -39,8 +39,7 @@ const SF_ROTATE = 1 << 2
 const SF_SCALE = 1 << 3
 const SF_GLOBAL_IN = 1 << 4
 const SF_GLOBAL_OUT = 1 << 5
-const SF_DIRTY = 1 << 6
-const SF_INVISIBLE = 1 << 7
+const SF_INVISIBLE = 1 << 6
 
 export (int, FLAGS, "enabled", "translate", "rotate", "scale", "global in", "global out") var flags: int = SF_ENABLED | SF_TRANSLATE setget _set_flags, _get_flags
 
@@ -112,13 +111,11 @@ func _SetProcessing():
 
 	set_process(bEnable)
 	set_physics_process(bEnable)
-	pass
 
 
 func _enter_tree():
 	# might have been moved
 	_FindTarget()
-	pass
 
 
 func _notification(what):
@@ -130,7 +127,6 @@ func _notification(what):
 
 
 func _RefreshTransform():
-	_ClearFlags(SF_DIRTY)
 
 	if _HasTarget() == false:
 		return
@@ -222,8 +218,6 @@ func _HasTarget() -> bool:
 
 
 func _process(_delta):
-	if _TestFlags(SF_DIRTY):
-		_RefreshTransform()
 
 	var f = Engine.get_physics_interpolation_fraction()
 
@@ -256,13 +250,7 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
-	# take care of the special case where multiple physics ticks
-	# occur before a frame .. the data must flow!
-	if _TestFlags(SF_DIRTY):
-		_RefreshTransform()
-
-	_SetFlags(SF_DIRTY)
-	pass
+	_RefreshTransform()
 
 
 func _LerpAngle(from: float, to: float, weight: float) -> float:

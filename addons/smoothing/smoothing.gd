@@ -31,8 +31,7 @@ const SF_ENABLED = 1 << 0
 const SF_TRANSLATE = 1 << 1
 const SF_BASIS = 1 << 2
 const SF_SLERP = 1 << 3
-const SF_DIRTY = 1 << 4
-const SF_INVISIBLE = 1 << 5
+const SF_INVISIBLE = 1 << 4
 
 export (int, FLAGS, "enabled", "translate", "basis", "slerp") var flags: int = SF_ENABLED | SF_TRANSLATE | SF_BASIS setget _set_flags, _get_flags
 
@@ -120,8 +119,6 @@ func _notification(what):
 
 
 func _RefreshTransform():
-	_ClearFlags(SF_DIRTY)
-
 	if _HasTarget() == false:
 		return
 
@@ -186,11 +183,8 @@ func _HasTarget() -> bool:
 
 
 func _process(_delta):
-	if _TestFlags(SF_DIRTY):
-		_RefreshTransform()
 
 	var f = Engine.get_physics_interpolation_fraction()
-
 	var tr: Transform = Transform()
 
 	# translate
@@ -207,17 +201,9 @@ func _process(_delta):
 
 	transform = tr
 
-	pass
-
 
 func _physics_process(_delta):
-	# take care of the special case where multiple physics ticks
-	# occur before a frame .. the data must flow!
-	if _TestFlags(SF_DIRTY):
-		_RefreshTransform()
-
-	_SetFlags(SF_DIRTY)
-	pass
+	_RefreshTransform()
 
 
 func _LerpBasis(from: Basis, to: Basis, f: float) -> Basis:
