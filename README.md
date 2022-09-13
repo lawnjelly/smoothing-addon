@@ -96,7 +96,7 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 There is no need for JitterFix (`Project Settings->Physics->Common->Physics Jitter Fix`) when using fixed timestep interpolation, indeed it may interfere with getting a good result. The addon now enforces this by setting `Engine.set_physics_jitter_fix` to 0 as smoothing nodes are created.
 
 ### Authors
-Lawnjelly, Calinou
+Lawnjelly, Calinou, Niclas Eriksen
 
 __This addon is also available as a c++ module (slight differences), see:__
 https://github.com/lawnjelly/godot-smooth
