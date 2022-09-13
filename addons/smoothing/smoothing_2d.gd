@@ -20,7 +20,13 @@
 
 extends Node2D
 
-export (NodePath) var target: NodePath setget set_target, get_target
+
+@export
+var target: NodePath:
+	get:
+		return get_target()
+	set(v):
+		return set_target(v)
 
 var _m_Target: Node2D
 
@@ -41,7 +47,12 @@ const SF_GLOBAL_IN = 1 << 4
 const SF_GLOBAL_OUT = 1 << 5
 const SF_INVISIBLE = 1 << 6
 
-export (int, FLAGS, "enabled", "translate", "rotate", "scale", "global in", "global out") var flags: int = SF_ENABLED | SF_TRANSLATE setget _set_flags, _get_flags
+
+@export_enum(FLAGS, "enabled", "translate", "rotate", "scale", "global in", "global out") var flags: int = SF_ENABLED | SF_TRANSLATE:
+	set(v):
+		return _set_flags(v)
+	get:
+		return _get_flags()
 
 ##########################################################################################
 # USER FUNCS
@@ -176,11 +187,11 @@ func _FindTarget():
 	var targ = get_node(target)
 
 	if ! targ:
-		printerr("ERROR SmoothingNode2D : Target " + target + " not found")
+		printerr("ERROR SmoothingNode2D : Target " + str(target) + " not found")
 		return
 
 	if not targ is Node2D:
-		printerr("ERROR SmoothingNode2D : Target " + target + " is not Node2D")
+		printerr("ERROR SmoothingNode2D : Target " + str(target) + " is not Node2D")
 		target = ""
 		return
 
@@ -224,7 +235,7 @@ func _process(_delta):
 	if _TestFlags(SF_GLOBAL_OUT):
 		# translate
 		if _TestFlags(SF_TRANSLATE):
-			set_global_position(m_Pos_prev.linear_interpolate(m_Pos_curr, f))
+			set_global_position(m_Pos_prev.lerp(m_Pos_curr, f))
 
 		# rotate
 		if _TestFlags(SF_ROTATE):
@@ -232,11 +243,11 @@ func _process(_delta):
 			set_global_rotation(r)
 
 		if _TestFlags(SF_SCALE):
-			set_global_scale(m_Scale_prev.linear_interpolate(m_Scale_curr, f))
+			set_global_scale(m_Scale_prev.lerp(m_Scale_curr, f))
 	else:
 		# translate
 		if _TestFlags(SF_TRANSLATE):
-			set_position(m_Pos_prev.linear_interpolate(m_Pos_curr, f))
+			set_position(m_Pos_prev.lerp(m_Pos_curr, f))
 
 		# rotate
 		if _TestFlags(SF_ROTATE):
@@ -244,7 +255,7 @@ func _process(_delta):
 			set_rotation(r)
 
 		if _TestFlags(SF_SCALE):
-			set_scale(m_Scale_prev.linear_interpolate(m_Scale_curr, f))
+			set_scale(m_Scale_prev.lerp(m_Scale_curr, f))
 
 	pass
 
