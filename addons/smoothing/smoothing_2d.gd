@@ -48,7 +48,7 @@ const SF_GLOBAL_OUT = 1 << 5
 const SF_INVISIBLE = 1 << 6
 
 
-@export_enum(FLAGS, "enabled", "translate", "rotate", "scale", "global in", "global out") var flags: int = SF_ENABLED | SF_TRANSLATE:
+@export_flags("enabled", "translate", "rotate", "scale", "global in", "global out") var flags: int = SF_ENABLED | SF_TRANSLATE:
 	set(v):
 		return _set_flags(v)
 	get:

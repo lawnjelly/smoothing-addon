@@ -40,7 +40,7 @@ const SF_BASIS = 1 << 2
 const SF_SLERP = 1 << 3
 const SF_INVISIBLE = 1 << 4
 
-@export_enum(FLAGS, "enabled", "translate", "basis", "slerp") var flags: int = SF_ENABLED | SF_TRANSLATE | SF_BASIS:
+@export_flags("enabled", "translate", "basis", "slerp") var flags: int = SF_ENABLED | SF_TRANSLATE | SF_BASIS:
 	set(v):
 		return _set_flags(v)
 	get:
