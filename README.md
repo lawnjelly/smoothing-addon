@@ -46,6 +46,9 @@ This may sound overly complicated, but because of the 3d maths involved, it is u
 
 This means in your gameplay programming, 99% of the time you would usually be mostly concerned with the position and rotation of the physics rep. Aside a few things like visual effects, the visual rep will follow the physics rep, and you don't need to worry about it. This also means that providing you drive your gameplay using `_physics_process` rather than `_process`, your gameplay will run the same no matter what machine you run it on! Fantastic.
 
+### Note
+You may also be able to use the `set_as_toplevel()` function on `Spatial`, instead of changing the parenting arrangement, as an alternative approach for 3D.
+
 ### Update
 I have experimentally reallowed adding parents / grandparents as targets, but for 2D only. You *may* be able to get away with it, but it is still not recommended. You would probably have to set the global in and global out flags.
 
