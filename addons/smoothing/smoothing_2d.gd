@@ -24,9 +24,11 @@ extends Node2D
 @export
 var target: NodePath:
 	get:
-		return get_target()
+		return target
 	set(v):
-		return set_target(v)
+		target = v
+		if is_inside_tree():
+			_FindTarget()
 
 var _m_Target: Node2D
 
@@ -50,9 +52,11 @@ const SF_INVISIBLE = 1 << 6
 
 @export_flags("enabled", "translate", "rotate", "scale", "global in", "global out") var flags: int = SF_ENABLED | SF_TRANSLATE:
 	set(v):
-		return _set_flags(v)
+		flags = v
+		# we may have enabled or disabled
+		_SetProcessing()
 	get:
-		return _get_flags()
+		return flags
 
 ##########################################################################################
 # USER FUNCS
@@ -93,26 +97,6 @@ func _ready():
 	m_Angle_prev = 0
 	set_process_priority(100)
 	Engine.set_physics_jitter_fix(0.0)
-
-
-func set_target(new_value):
-	target = new_value
-	if is_inside_tree():
-		_FindTarget()
-
-
-func get_target():
-	return target
-
-
-func _set_flags(new_value):
-	flags = new_value
-	# we may have enabled or disabled
-	_SetProcessing()
-
-
-func _get_flags():
-	return flags
 
 
 func _SetProcessing():
