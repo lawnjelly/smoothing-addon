@@ -1,0 +1,35 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Smoothing"
+run/main_scene="res://Root.tscn"
+config/features=PackedStringArray("4.0")
+config/icon="res://smooth_icon.png"
+
+[editor_plugins]
+
+enabled=PackedStringArray("smoothing")
+
+[physics]
+
+common/physics_ticks_per_second=2
+common/physics_jitter_fix=0.0
+common/enable_object_picking=false
+common/physics_fps=2
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+quality/directional_shadow/size=640
+quality/shadow_atlas/size=640
+quality/depth_prepass/enable=false
+environment/default_environment="res://default_env.tres"
