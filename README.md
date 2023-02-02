@@ -1,4 +1,4 @@
-# smoothing-addon v 1.0.5
+# smoothing-addon v 1.1.0
 Fixed timestep interpolation gdscript addon for Godot 3.2 (and later versions)
 
 If you were wondering how to use that new function `Engine.get_physics_interpolation_fraction()` in 3.2, feel free to use this as is, or to get ideas from for your own version. 
@@ -13,7 +13,7 @@ https://www.youtube.com/watch?v=lWhHBAcH4sM
 
 ## Installation
 
-This repository contains the addon (in the addons folder) and an example demo project as a zip file. To examine the demo simply unzip it to a new folder, copy the addons folder into the demo project, and open it from Godot.
+This repository contains the addon (in the addons folder) and an example demo project.
 
 To use the addon in your own project:
 1. Create a new project in Godot or use an existing project.
@@ -26,48 +26,31 @@ In a game you would usually choose to create a Node2D, Spatial, RigidBody, Kinem
 
 The visual respresentation of this object (VISUAL REP) is often simply a child of this node, such as a MeshInstance, or Sprite. That way it inherits the transform of the parent physics rep. When you move the physics rep, the transform propagates to the child node, the visual rep, and it renders in the same place as the physics rep. In some games the visual rep can even be the same node as the physics rep (particularly when there is no actual physics).
 
-In order to use interpolation successfully, you have to slightly change mindset. Instead of the visual rep being directly a child of the physics rep, it needs to be a separate node in the scene tree, preferably inheriting no transform from a parent node (i.e. all the parents and grandparents will have zero translate, no rotate, and 1:1 scale).
+Usually transforms propagate from a parent to child. Fixed timestep interpolation works slightly differently - the VisualRep indirectly _follows_ the transform of the PhysicsRep, rather than being directly affected by it.
 
-e.g. Instead of:
-```
-Root
-    PhysicsRep
-        VisualRep (child of PhysicsRep)
-```
-The relationship becomes:
-```
-Root
-    PhysicsRep
-    VisualRep (child of Root)
-```
-To enable interpolation instead of relying on the scenetree transforms being propagated to children, we specifically tell the VisualRep to follow the PhysicsRep. This way it can follow the position and rotation of the PhysicsRep WITHOUT being directly affected by the transform of the PhysicsRep.
-
-This may sound overly complicated, but because of the 3d maths involved, it is usually essential to getting a good result.
-
-This means in your gameplay programming, 99% of the time you would usually be mostly concerned with the position and rotation of the physics rep. Aside a few things like visual effects, the visual rep will follow the physics rep, and you don't need to worry about it. This also means that providing you drive your gameplay using `_physics_process` rather than `_process`, your gameplay will run the same no matter what machine you run it on! Fantastic.
+In your gameplay programming, 99% of the time you would usually be mostly concerned with the position and rotation of the physics rep. Aside a few things like visual effects, the visual rep will follow the physics rep, and you don't need to worry about it. This also means that providing you drive your gameplay using `_physics_process` rather than `_process`, your gameplay will run the same no matter what machine you run it on! Fantastic.
 
 ### Note
-You may also be able to use the `set_as_toplevel()` function on `Spatial`, instead of changing the parenting arrangement, as an alternative approach for 3D.
-
-### Update
-I have experimentally reallowed adding parents / grandparents as targets, but for 2D only. You *may* be able to get away with it, but it is still not recommended. You would probably have to set the global in and global out flags.
+The smoothing nodes automatically call `set_as_toplevel()` on `_ready()`. This ensures that they only follow the selected target, rather than having their transform controlled directly by their parent. The default target to follow will however be the parent node, if a `Target` has not been assigned in the inspector.
 
 ## Usage
 
 ### 3D
 1. You would usually in a game choose to create a Spatial, RigidBody, Kinematic body etc node for your physics rep, and have a visual representation (e.g. a MeshInstance) as a child of this node.
 2. Do this as normal so that you can see the object moving in the game.
-3. Add the new 'Smoothing' node to the scene, but _on a different branch_, as shown in the section above.
-4. Drag the visual representation from being a child of the gameobject node, to being a child of the Smoothing node.
-5. The final step is to 'link' the Smoothing node to the gameobject, such that the gameobject is the target, which the smoothing node will follow.
-6. Do this by looking in the inspector panel for the Smoothing node, and select the 'Target' to be the gameobject node.
-7. That is mainly it! Just run the game and now hopefully the visual representation will follow the gameobject, but now with interpolation. You can test this is working by running at a low physics tick rate (physics_fps in project settings->physics).
+3. Add the new 'Smoothing' node to the scene, as a child of your physics rep.
+4. Drag the visual representation from being a child of the physics rep, to being a child of the Smoothing node.
+5. That is mainly it! Just run the game and now hopefully the visual representation will follow the gameobject, but now with interpolation. You can test this is working by running at a low physics tick rate (physics_fps in project settings->physics).
 
 ### 2D
-The procedure for 2D is pretty much the same as with 3D except you would be using a node derived from Node2D as the gameobject (target) and the 'Smoothing2D' node should be used instead of 'Smoothing'.
+The procedure for 2D is pretty much the same as with 3D except you would be using a node derived from Node2D as the physics rep (target) and the 'Smoothing2D' node should be used instead of 'Smoothing'.
+
+### Following targets that are not the parent node
+Additionally the smoothing node has the ability to follow targets that are not parent nodes. You can do this by assigning a `Target` in the inspector panel for the Smoothing node.
 
 ### Teleporting
-The one special case when using smoothing nodes is the case when you want a target to instantaneously move from one location to another (for instance respawning a player, or at level start) where you do not want interpolation from the previous position. In this special case, you should move the target node (by setting the translation or position), and then call the 'teleport' function in the Smoothing node. This ensures that interpolation will be switched off temporarily for the move.
+There is one special case when using smoothing nodes - the case when you want a target to instantaneously move from one location to another (for instance respawning a player, or at level start) where you do not want interpolation from the previous position. In this special case, you should move the target node (by setting the translation or position), and then call the 'teleport' function in the Smoothing node. This ensures that interpolation will be switched off temporarily for the move.
+_Make sure to call `teleport` AFTER moving the target node, rather than before._
 
 ### Other options
 As well as choosing the Target, in the inspector for the Smoothing nodes there are a set of flags.
