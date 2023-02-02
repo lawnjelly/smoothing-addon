@@ -71,6 +71,7 @@ func _ready():
 	_m_trCurr = Transform()
 	_m_trPrev = Transform()
 	set_process_priority(100)
+	set_as_toplevel(true)
 	Engine.set_physics_jitter_fix(0.0)
 
 
@@ -125,21 +126,15 @@ func _RefreshTransform():
 	_m_trPrev = _m_trCurr
 	_m_trCurr = _m_Target.transform
 
-
-func _IsTargetParent(node):
-	if node == _m_Target:
-		return true  # disallow
-
-	var parent = node.get_parent()
-	if parent:
-		return _IsTargetParent(parent)
-
-	return false
-
-
 func _FindTarget():
 	_m_Target = null
+	
+	# If no target has been assigned in the property,
+	# default to using the parent as the target.
 	if target.is_empty():
+		var parent = get_parent_spatial()
+		if parent:
+			_m_Target = parent
 		return
 
 	var targ = get_node(target)
@@ -157,11 +152,10 @@ func _FindTarget():
 	_m_Target = targ
 
 	# do a final check
-	# is the target a parent or grandparent of the smoothing node?
-	# if so, disallow
-	if _IsTargetParent(self):
+	# certain targets are disallowed
+	if _m_Target == self:
 		var msg = _m_Target.get_name() + " assigned to " + self.get_name() + "]"
-		printerr("ERROR SmoothingNode : Target should not be a parent or grandparent [", msg)
+		printerr("ERROR SmoothingNode : Target should not be self [", msg)
 
 		# error message
 		#OS.alert("Target cannot be a parent or grandparent in the scene tree.", "SmoothingNode")
