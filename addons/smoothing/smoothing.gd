@@ -42,7 +42,9 @@ const SF_INVISIBLE = 1 << 4
 
 @export_flags("enabled", "translate", "basis", "slerp") var flags: int = SF_ENABLED | SF_TRANSLATE | SF_BASIS:
 	set(v):
-		return _set_flags(v)
+		flags = v
+		# we may have enabled or disabled
+		_SetProcessing()
 	get:
 		return flags
 
