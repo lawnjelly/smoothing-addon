@@ -124,7 +124,7 @@ func _RefreshTransform():
 		return
 
 	_m_trPrev = _m_trCurr
-	_m_trCurr = _m_Target.transform
+	_m_trCurr = _m_Target.global_transform
 
 func _FindTarget():
 	_m_Target = null
