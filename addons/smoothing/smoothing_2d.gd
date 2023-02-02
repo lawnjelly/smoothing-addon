@@ -62,7 +62,7 @@ const SF_INVISIBLE = 1 << 6
 # USER FUNCS
 
 
-# call this on e.g. starting a level, AFTER moving the target
+# call this checked e.g. starting a level, AFTER moving the target
 # so we can update both the previous and current values
 func teleport():
 	var temp_flags = flags
@@ -96,6 +96,7 @@ func _ready():
 	m_Angle_curr = 0
 	m_Angle_prev = 0
 	set_process_priority(100)
+	set_as_top_level(true)
 	Engine.set_physics_jitter_fix(0.0)
 
 
@@ -115,7 +116,7 @@ func _enter_tree():
 
 func _notification(what):
 	match what:
-		# invisible turns off processing
+		# invisible turns unchecked processing
 		NOTIFICATION_VISIBILITY_CHANGED:
 			_ChangeFlags(SF_INVISIBLE, is_visible_in_tree() == false)
 			_SetProcessing()
@@ -151,23 +152,17 @@ func _RefreshTransform():
 			m_Scale_prev = m_Scale_curr
 			m_Scale_curr = _m_Target.get_scale()
 
-
-func _IsTargetParent(node):
-	if node == _m_Target:
-		return true  # disallow
-
-	var parent = node.get_parent()
-	if parent:
-		return _IsTargetParent(parent)
-
-	return false
-
-
 func _FindTarget():
 	_m_Target = null
-	if target.is_empty():
-		return
 
+	# If no target has been assigned in the property,
+	# default to using the parent as the target.
+	if target.is_empty():
+		var parent = get_parent()
+		if parent and (parent is Node2D):
+			_m_Target = parent
+		return
+		
 	var targ = get_node(target)
 
 	if ! targ:
@@ -181,24 +176,6 @@ func _FindTarget():
 
 	# if we got to here targ is correct type
 	_m_Target = targ
-
-	# hard coded to off in 2d to allow this for now
-	# but I'm still not sure it should be allowed...
-
-	# do a final check
-	# is the target a parent or grandparent of the smoothing node?
-	# if so, disallow
-
-
-#	if _IsTargetParent(self):
-#		var msg = _m_Target.get_name() + " assigned to " + self.get_name() + "]"
-#		printerr("ERROR SmoothingNode2D : Target should not be a parent or grandparent [", msg)
-#
-#		# error message
-#		_m_Target = null
-#		target = ""
-#		return
-
 
 func _HasTarget() -> bool:
 	if _m_Target == null:

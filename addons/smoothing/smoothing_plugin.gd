@@ -12,6 +12,6 @@ func _enter_tree():
 
 func _exit_tree():
 	# Clean-up of the plugin goes here
-	# Always remember to remove it from the engine when deactivated
+	# Always remember to remove_at it from the engine when deactivated
 	remove_custom_type("Smoothing")
 	remove_custom_type("Smoothing2D")

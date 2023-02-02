@@ -1,0 +1,59 @@
+[gd_scene load_steps=10 format=3 uid="uid://l2awq2jku06t"]
+
+[ext_resource type="Script" path="res://addons/smoothing/smoothing.gd" id="1"]
+[ext_resource type="Script" path="res://Target.gd" id="3"]
+[ext_resource type="Script" path="res://addons/smoothing/smoothing_2d.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://yib1hns4cocl" path="res://icon.png" id="5"]
+[ext_resource type="Script" path="res://Target2D.gd" id="6"]
+[ext_resource type="Script" path="res://Root.gd" id="7"]
+
+[sub_resource type="BoxMesh" id="3"]
+
+[sub_resource type="BoxMesh" id="1"]
+
+[sub_resource type="Environment" id="5"]
+
+[node name="Root" type="Node3D"]
+script = ExtResource("7")
+
+[node name="Example2D" type="Node2D" parent="."]
+
+[node name="Target2D" type="Node2D" parent="Example2D"]
+position = Vector2(0, 300)
+scale = Vector2(2, 2)
+script = ExtResource("6")
+
+[node name="Sprite" type="Sprite2D" parent="Example2D/Target2D"]
+texture = ExtResource("5")
+
+[node name="Smoothing2D" type="Node2D" parent="Example2D/Target2D"]
+position = Vector2(0, -150)
+scale = Vector2(0.5, 0.5)
+script = ExtResource("4")
+flags = 15
+
+[node name="Sprite_smoothed" type="Sprite2D" parent="Example2D/Target2D/Smoothing2D"]
+texture = ExtResource("5")
+
+[node name="Example3D" type="Node3D" parent="."]
+
+[node name="Target" type="Node3D" parent="Example3D"]
+script = ExtResource("3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Example3D/Target"]
+mesh = SubResource("3")
+
+[node name="Smoothing" type="Node3D" parent="Example3D/Target"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+script = ExtResource("1")
+
+[node name="MeshInstance3D_smoothed" type="MeshInstance3D" parent="Example3D/Target/Smoothing"]
+mesh = SubResource("1")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6.77548)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("5")

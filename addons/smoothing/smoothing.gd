@@ -51,7 +51,7 @@ const SF_INVISIBLE = 1 << 4
 # USER FUNCS
 
 
-# call this on e.g. starting a level, AFTER moving the target
+# call this checked e.g. starting a level, AFTER moving the target
 # so we can update both the previous and current values
 func teleport():
 	var temp_flags = flags
@@ -83,6 +83,7 @@ func _ready():
 	_m_trCurr = Transform3D()
 	_m_trPrev = Transform3D()
 	set_process_priority(100)
+	set_as_top_level(true)
 	Engine.set_physics_jitter_fix(0.0)
 
 
@@ -119,7 +120,7 @@ func _enter_tree():
 
 func _notification(what):
 	match what:
-		# invisible turns off processing
+		# invisible turns unchecked processing
 		NOTIFICATION_VISIBILITY_CHANGED:
 			_ChangeFlags(SF_INVISIBLE, is_visible_in_tree() == false)
 			_SetProcessing()
@@ -130,25 +131,19 @@ func _RefreshTransform():
 		return
 
 	_m_trPrev = _m_trCurr
-	_m_trCurr = _m_Target.transform
-
-
-func _IsTargetParent(node):
-	if node == _m_Target:
-		return true  # disallow
-
-	var parent = node.get_parent()
-	if parent:
-		return _IsTargetParent(parent)
-
-	return false
-
+	_m_trCurr = _m_Target.global_transform
 
 func _FindTarget():
 	_m_Target = null
+	
+	# If no target has been assigned in the property,
+	# default to using the parent as the target.
 	if target.is_empty():
+		var parent = get_parent_node_3d()
+		if parent:
+			_m_Target = parent
 		return
-
+		
 	var targ = get_node(target)
 
 	if ! targ:
@@ -163,12 +158,10 @@ func _FindTarget():
 	# if we got to here targ is a spatial
 	_m_Target = targ
 
-	# do a final check
-	# is the target a parent or grandparent of the smoothing node?
-	# if so, disallow
-	if _IsTargetParent(self):
+	# certain targets are disallowed
+	if _m_Target == self:
 		var msg = str(_m_Target.get_name()) + " assigned to " + str(self.get_name()) + "]"
-		printerr("ERROR SmoothingNode : Target should not be a parent or grandparent [", msg)
+		printerr("ERROR SmoothingNode : Target should not be self [", msg)
 
 		# error message
 		#OS.alert("Target cannot be a parent or grandparent in the scene tree.", "SmoothingNode")
