@@ -17,7 +17,7 @@ config/icon="res://smooth_icon.png"
 
 [editor_plugins]
 
-enabled=PackedStringArray("smoothing")
+enabled=PackedStringArray("res://addons/smoothing/plugin.cfg")
 
 [physics]
 
