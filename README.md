@@ -1,4 +1,4 @@
-# smoothing-addon v 1.1.0
+# smoothing-addon v 1.1.1
 Fixed timestep interpolation gdscript addon for Godot 3.2 (and later versions)
 
 If you were wondering how to use that new function `Engine.get_physics_interpolation_fraction()` in 3.2, feel free to use this as is, or to get ideas from for your own version. 
@@ -31,7 +31,7 @@ Usually transforms propagate from a parent to child. Fixed timestep interpolatio
 In your gameplay programming, 99% of the time you would usually be mostly concerned with the position and rotation of the physics rep. Aside a few things like visual effects, the visual rep will follow the physics rep, and you don't need to worry about it. This also means that providing you drive your gameplay using `_physics_process` rather than `_process`, your gameplay will run the same no matter what machine you run it on! Fantastic.
 
 ### Note
-The smoothing nodes automatically call `set_as_toplevel()` on `_ready()`. This ensures that they only follow the selected target, rather than having their transform controlled directly by their parent. The default target to follow will however be the parent node, if a `Target` has not been assigned in the inspector.
+The smoothing nodes automatically call `set_as_toplevel()` when in global mode. This ensures that they only follow the selected target, rather than having their transform controlled directly by their parent. The default target to follow will however be the parent node, if a `Target` has not been assigned in the inspector.
 
 ## Usage
 
@@ -69,7 +69,7 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 5. global in - will read the global transform of the target instead of local
 6. global out - will set the global transform of the smoothing node instead of local
 
-(in most cases local transform will be the best choice)
+(Local mode may be more efficient but you must understand the difference between local and global transforms. Additionally you can turn off rotate and scale if not using them, for increased efficiency.)
 
 ### Notes
 

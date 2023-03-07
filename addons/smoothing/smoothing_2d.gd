@@ -41,7 +41,7 @@ const SF_GLOBAL_IN = 1 << 4
 const SF_GLOBAL_OUT = 1 << 5
 const SF_INVISIBLE = 1 << 6
 
-export (int, FLAGS, "enabled", "translate", "rotate", "scale", "global in", "global out") var flags: int = SF_ENABLED | SF_TRANSLATE setget _set_flags, _get_flags
+export (int, FLAGS, "enabled", "translate", "rotate", "scale", "global in", "global out") var flags: int = SF_ENABLED | SF_TRANSLATE | SF_ROTATE | SF_SCALE | SF_GLOBAL_IN | SF_GLOBAL_OUT setget _set_flags, _get_flags
 
 ##########################################################################################
 # USER FUNCS
@@ -81,7 +81,6 @@ func _ready():
 	m_Angle_curr = 0
 	m_Angle_prev = 0
 	set_process_priority(100)
-	set_as_toplevel(true)
 	Engine.set_physics_jitter_fix(0.0)
 
 
@@ -112,6 +111,8 @@ func _SetProcessing():
 
 	set_process(bEnable)
 	set_physics_process(bEnable)
+	
+	set_as_toplevel(_TestFlags(SF_GLOBAL_OUT))
 
 
 func _enter_tree():
