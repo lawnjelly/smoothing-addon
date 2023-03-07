@@ -41,7 +41,6 @@ script = ExtResource( 4 )
 __meta__ = {
 "_editor_icon": ExtResource( 8 )
 }
-flags = 15
 
 [node name="Sprite_smoothed" type="Sprite" parent="Example2D/Target2D/Smoothing2D"]
 texture = ExtResource( 5 )
