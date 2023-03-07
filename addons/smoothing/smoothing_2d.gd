@@ -200,30 +200,21 @@ func _process(_delta):
 
 	var f = Engine.get_physics_interpolation_fraction()
 
-	if _TestFlags(SF_GLOBAL_OUT):
-		# translate
-		if _TestFlags(SF_TRANSLATE):
-			set_global_position(m_Pos_prev.linear_interpolate(m_Pos_curr, f))
+	# We can always use local position rather than set_global_position
+	# because even in global mode we are set_as_top_level, and the result
+	# will be the same.
+	
+	# translate
+	if _TestFlags(SF_TRANSLATE):
+		set_position(m_Pos_prev.linear_interpolate(m_Pos_curr, f))
 
-		# rotate
-		if _TestFlags(SF_ROTATE):
-			var r = _LerpAngle(m_Angle_prev, m_Angle_curr, f)
-			set_global_rotation(r)
+	# rotate
+	if _TestFlags(SF_ROTATE):
+		var r = _LerpAngle(m_Angle_prev, m_Angle_curr, f)
+		set_rotation(r)
 
-		if _TestFlags(SF_SCALE):
-			set_global_scale(m_Scale_prev.linear_interpolate(m_Scale_curr, f))
-	else:
-		# translate
-		if _TestFlags(SF_TRANSLATE):
-			set_position(m_Pos_prev.linear_interpolate(m_Pos_curr, f))
-
-		# rotate
-		if _TestFlags(SF_ROTATE):
-			var r = _LerpAngle(m_Angle_prev, m_Angle_curr, f)
-			set_rotation(r)
-
-		if _TestFlags(SF_SCALE):
-			set_scale(m_Scale_prev.linear_interpolate(m_Scale_curr, f))
+	if _TestFlags(SF_SCALE):
+		set_scale(m_Scale_prev.linear_interpolate(m_Scale_curr, f))
 
 	pass
 
