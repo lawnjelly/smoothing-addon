@@ -81,6 +81,13 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 
 There is no need for JitterFix (`Project Settings->Physics->Common->Physics Jitter Fix`) when using fixed timestep interpolation, indeed it may interfere with getting a good result. The addon now enforces this by setting `Engine.set_physics_jitter_fix` to 0 as smoothing nodes are created.
 
+#### Y-Sort in 2D
+In 2D there is a special case if you want to use y-sorting. The `global_out` setting internally calls `set_as_toplevel()` on the node, unfortunately due to some internal quirks of the engine, this is incompatible with y-sorting. But this is possible to workaround.
+To use y-sorting:
+* Switch off `global_out` in the smoothing node.
+* Do not add the smoothing node as a child of the target (e.g. player). Instead add it on a branch where no transform will be applied from the parent (e.g. a child of the root node where the root node has no transform). Then set the target manually, either using the inspector or calling the `set_target()` function.
+* You can still use `global_in`, this does not break the y-sorting.
+
 ### Authors
 Lawnjelly, Calinou
 
