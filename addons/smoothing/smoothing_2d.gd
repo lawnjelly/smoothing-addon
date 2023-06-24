@@ -107,8 +107,6 @@ func _SetProcessing():
 	set_process(bEnable)
 	set_physics_process(bEnable)
 
-	set_as_top_level(_TestFlags(SF_GLOBAL_OUT))
-
 func _enter_tree():
 	# might have been moved
 	_FindTarget()
@@ -193,23 +191,28 @@ func _process(_delta):
 
 	var f = Engine.get_physics_interpolation_fraction()
 
-	# We can always use local position rather than set_global_position
-	# because even in global mode we are set_as_top_level, and the result
-	# will be the same.
+	if _TestFlags(SF_GLOBAL_OUT):
+		if _TestFlags(SF_TRANSLATE):
+			set_global_position(m_Pos_prev.lerp(m_Pos_curr, f))
 
-	# translate
-	if _TestFlags(SF_TRANSLATE):
-		set_position(m_Pos_prev.lerp(m_Pos_curr, f))
+		if _TestFlags(SF_ROTATE):
+			var r = _LerpAngle(m_Angle_prev, m_Angle_curr, f)
+			set_global_rotation(r)
 
-	# rotate
-	if _TestFlags(SF_ROTATE):
-		var r = _LerpAngle(m_Angle_prev, m_Angle_curr, f)
-		set_rotation(r)
+		if _TestFlags(SF_SCALE):
+			set_global_scale(m_Scale_prev.lerp(m_Scale_curr, f))
 
-	if _TestFlags(SF_SCALE):
-		set_scale(m_Scale_prev.lerp(m_Scale_curr, f))
+	else:
+		if _TestFlags(SF_TRANSLATE):
+			set_position(m_Pos_prev.lerp(m_Pos_curr, f))
+			
+		if _TestFlags(SF_ROTATE):
+			var r = _LerpAngle(m_Angle_prev, m_Angle_curr, f)
+			set_rotation(r)
 
-	pass
+		if _TestFlags(SF_SCALE):
+			set_scale(m_Scale_prev.lerp(m_Scale_curr, f))
+	
 
 
 func _physics_process(_delta):
