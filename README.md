@@ -33,6 +33,8 @@ In your gameplay programming, 99% of the time you would usually be mostly concer
 ### Note
 The 3D smoothing node automatically calls `set_as_toplevel()` when in global mode. This ensures that it only follows the selected target, rather than having the transform controlled directly by the parent. The default target to follow will however be the parent node, if a `Target` has not been assigned in the inspector.
 
+In 2D, *flips* are supported. That is, if you use negative scaling to flip a sprite, the interpolation will detect this and turn off for a tick to get an instantaneous flip, instead of having the sprite "turn inside out".
+
 ## Usage
 
 ### 3D
