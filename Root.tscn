@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://l2awq2jku06t"]
+[gd_scene load_steps=12 format=3 uid="uid://l2awq2jku06t"]
 
 [ext_resource type="Script" path="res://addons/smoothing/smoothing.gd" id="1"]
 [ext_resource type="Script" path="res://Target.gd" id="3"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://yib1hns4cocl" path="res://icon.png" id="5"]
 [ext_resource type="Script" path="res://Target2D.gd" id="6"]
 [ext_resource type="Script" path="res://Root.gd" id="7"]
+[ext_resource type="Script" path="res://Target2D_flipped.gd" id="8"]
+[ext_resource type="Texture2D" uid="uid://bbkuttncem6mw" path="res://smooth_icon.png" id="9"]
 
 [sub_resource type="BoxMesh" id="3"]
 
@@ -33,6 +35,15 @@ script = ExtResource("4")
 
 [node name="Sprite_smoothed" type="Sprite2D" parent="Example2D/Target2D/Smoothing2D"]
 texture = ExtResource("5")
+
+[node name="Target2D_flipped" type="Node2D" parent="Example2D"]
+script = ExtResource("8")
+
+[node name="Smoothing2D" type="Node2D" parent="Example2D/Target2D_flipped"]
+script = ExtResource("4")
+
+[node name="Sprite2D" type="Sprite2D" parent="Example2D/Target2D_flipped/Smoothing2D"]
+texture = ExtResource("9")
 
 [node name="Example3D" type="Node3D" parent="."]
 
