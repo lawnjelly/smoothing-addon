@@ -31,26 +31,17 @@ var target: NodePath:
 			_FindTarget()
 
 var _m_Target: Node2D
+var _m_Flip:bool = false
 
-var m_Pos_curr: Vector2 = Vector2()
-var m_Pos_prev: Vector2 = Vector2()
-
-var m_Angle_curr: float
-var m_Angle_prev: float
-
-var m_Scale_curr: Vector2 = Vector2()
-var m_Scale_prev: Vector2 = Vector2()
+var _m_Trans_curr: Transform2D = Transform2D()
+var _m_Trans_prev: Transform2D = Transform2D()
 
 const SF_ENABLED = 1 << 0
-const SF_TRANSLATE = 1 << 1
-const SF_ROTATE = 1 << 2
-const SF_SCALE = 1 << 3
-const SF_GLOBAL_IN = 1 << 4
-const SF_GLOBAL_OUT = 1 << 5
-const SF_INVISIBLE = 1 << 6
+const SF_GLOBAL_IN = 1 << 1
+const SF_GLOBAL_OUT = 1 << 2
+const SF_INVISIBLE = 1 << 3
 
-
-@export_flags("enabled", "translate", "rotate", "scale", "global in", "global out") var flags: int = SF_ENABLED | SF_TRANSLATE | SF_ROTATE | SF_SCALE | SF_GLOBAL_IN | SF_GLOBAL_OUT:
+@export_flags("enabled", "global in", "global out") var flags: int = SF_ENABLED | SF_GLOBAL_IN | SF_GLOBAL_OUT:
 	set(v):
 		flags = v
 		# we may have enabled or disabled
@@ -65,19 +56,11 @@ const SF_INVISIBLE = 1 << 6
 # call this checked e.g. starting a level, AFTER moving the target
 # so we can update both the previous and current values
 func teleport():
-	var temp_flags = flags
-	_SetFlags(SF_TRANSLATE | SF_ROTATE | SF_SCALE)
-
 	_RefreshTransform()
-	m_Pos_prev = m_Pos_curr
-	m_Angle_prev = m_Angle_curr
-	m_Scale_prev = m_Scale_curr
+	_m_Trans_prev = _m_Trans_curr
 
 	# call frame upate to make sure all components of the node are set
 	_process(0)
-
-	# get back the old flags
-	flags = temp_flags
 
 
 func set_enabled(bEnable: bool):
@@ -93,8 +76,6 @@ func is_enabled():
 
 
 func _ready():
-	m_Angle_curr = 0
-	m_Angle_prev = 0
 	set_process_priority(100)
 	Engine.set_physics_jitter_fix(0.0)
 
@@ -107,7 +88,6 @@ func _SetProcessing():
 	set_process(bEnable)
 	set_physics_process(bEnable)
 
-	set_as_top_level(_TestFlags(SF_GLOBAL_OUT))
 
 func _enter_tree():
 	# might have been moved
@@ -127,30 +107,29 @@ func _RefreshTransform():
 	if _HasTarget() == false:
 		return
 
+	_m_Trans_prev = _m_Trans_curr
+
 	if _TestFlags(SF_GLOBAL_IN):
-		if _TestFlags(SF_TRANSLATE):
-			m_Pos_prev = m_Pos_curr
-			m_Pos_curr = _m_Target.get_global_position()
-
-		if _TestFlags(SF_ROTATE):
-			m_Angle_prev = m_Angle_curr
-			m_Angle_curr = _m_Target.get_global_rotation()
-
-		if _TestFlags(SF_SCALE):
-			m_Scale_prev = m_Scale_curr
-			m_Scale_curr = _m_Target.get_global_scale()
+		_m_Trans_curr = _m_Target.get_global_transform()
 	else:
-		if _TestFlags(SF_TRANSLATE):
-			m_Pos_prev = m_Pos_curr
-			m_Pos_curr = _m_Target.get_position()
+		_m_Trans_curr = _m_Target.get_transform()
 
-		if _TestFlags(SF_ROTATE):
-			m_Angle_prev = m_Angle_curr
-			m_Angle_curr = _m_Target.get_rotation()
+	_m_Flip = false
+	# Ideally we would use determinant core function, as in commented line below, but we
+	# need to workaround for backward compat.
+	# if (_m_Trans_prev.determinant() < 0) != (_m_Trans_curr.determinant() < 0):
+	
+	if (_Determinant_Sign(_m_Trans_prev) != _Determinant_Sign(_m_Trans_curr)):
+		_m_Flip = true
 
-		if _TestFlags(SF_SCALE):
-			m_Scale_prev = m_Scale_curr
-			m_Scale_curr = _m_Target.get_scale()
+func _Determinant_Sign(t:Transform2D)->bool:
+	# Workaround Transform2D determinant function not being available
+	# until 3.6 / 4.1.
+	# We calculate determinant manually, slower but compatible to lower
+	# godot versions.
+	var d = (t.x.x * t.y.y) - (t.x.y * t.y.x)
+	return d >= 0.0
+	
 
 func _FindTarget():
 	_m_Target = null
@@ -190,40 +169,25 @@ func _HasTarget() -> bool:
 
 
 func _process(_delta):
-
 	var f = Engine.get_physics_interpolation_fraction()
 
-	# We can always use local position rather than set_global_position
-	# because even in global mode we are set_as_top_level, and the result
-	# will be the same.
+	var tr = Transform2D()
+	tr.origin = lerp(_m_Trans_prev.origin, _m_Trans_curr.origin, f)
+	tr.x = lerp(_m_Trans_prev.x, _m_Trans_curr.x, f)
+	tr.y = lerp(_m_Trans_prev.y, _m_Trans_curr.y, f)
 
-	# translate
-	if _TestFlags(SF_TRANSLATE):
-		set_position(m_Pos_prev.lerp(m_Pos_curr, f))
+	# When a sprite flip is detected, turn off interpolation for that tick.
+	if _m_Flip:
+		tr = _m_Trans_curr
 
-	# rotate
-	if _TestFlags(SF_ROTATE):
-		var r = _LerpAngle(m_Angle_prev, m_Angle_curr, f)
-		set_rotation(r)
-
-	if _TestFlags(SF_SCALE):
-		set_scale(m_Scale_prev.lerp(m_Scale_curr, f))
-
-	pass
+	if _TestFlags(SF_GLOBAL_OUT):
+		set_global_transform(tr)
+	else:
+		set_transform(tr)
 
 
 func _physics_process(_delta):
 	_RefreshTransform()
-
-
-func _LerpAngle(from: float, to: float, weight: float) -> float:
-	return from + _ShortAngleDist(from, to) * weight
-
-
-func _ShortAngleDist(from: float, to: float) -> float:
-	var max_angle: float = 2 * PI
-	var diff: float = fmod(to - from, max_angle)
-	return fmod(2.0 * diff, max_angle) - diff
 
 
 func _SetFlags(f):

@@ -1,4 +1,4 @@
-# smoothing-addon v 1.1.1
+# smoothing-addon v 1.2
 Fixed timestep interpolation gdscript addon for Godot 4.x (and later versions)
 
 If you were wondering how to use that new function `Engine.get_physics_interpolation_fraction()` in 3.2, feel free to use this as is, or to get ideas from for your own version. 
@@ -31,7 +31,7 @@ Usually transforms propagate from a parent to child. Fixed timestep interpolatio
 In your gameplay programming, 99% of the time you would usually be mostly concerned with the position and rotation of the physics rep. Aside a few things like visual effects, the visual rep will follow the physics rep, and you don't need to worry about it. This also means that providing you drive your gameplay using `_physics_process` rather than `_process`, your gameplay will run the same no matter what machine you run it on! Fantastic.
 
 ### Note
-The smoothing nodes automatically call `set_as_toplevel()` when in global mode. This ensures that they only follow the selected target, rather than having their transform controlled directly by their parent. The default target to follow will however be the parent node, if a `Target` has not been assigned in the inspector.
+The 3D smoothing node automatically calls `set_as_toplevel()` when in global mode. This ensures that it only follows the selected target, rather than having the transform controlled directly by the parent. The default target to follow will however be the parent node, if a `Target` has not been assigned in the inspector.
 
 ## Usage
 
@@ -63,13 +63,10 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 
 #### 2D
 1. enabled - as above
-2. translate - as above
-3. rotate - interpolation of the node angle
-4. scale - interpolation of the node scale (x and y)
-5. global in - will read the global transform of the target instead of local
-6. global out - will set the global transform of the smoothing node instead of local
+2. global in - will read the global transform of the target instead of local
+3. global out - will set the global transform of the smoothing node instead of local
 
-(Local mode may be more efficient but you must understand the difference between local and global transforms. Additionally you can turn off rotate and scale if not using them, for increased efficiency.)
+(Local mode may be more efficient but you must understand the difference between local and global transforms.)
 
 ### Notes
 
@@ -80,13 +77,6 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 * In order to prevent an unneeded extra delay of one tick, it is important that smoothing nodes are processed _AFTER_ target nodes. This should now be automatically taken care as the addon internally uses `process_priority` to achieve this. Previously we required smoothing nodes to be placed lower in the scene tree than the target. This should hopefully no longer be the case.
 
 There is no need for JitterFix (`Project Settings->Physics->Common->Physics Jitter Fix`) when using fixed timestep interpolation, indeed it may interfere with getting a good result. The addon now enforces this by setting `Engine.set_physics_jitter_fix` to 0 as smoothing nodes are created.
-
-#### Y-Sort in 2D
-In 2D there is a special case if you want to use y-sorting. The `global_out` setting internally calls `set_as_toplevel()` on the node, unfortunately due to some internal quirks of the engine, this is incompatible with y-sorting. But this is possible to workaround.
-To use y-sorting:
-* Switch off `global_out` in the smoothing node.
-* Do not add the smoothing node as a child of the target (e.g. player). Instead add it on a branch where no transform will be applied from the parent (e.g. a child of the root node where the root node has no transform). Then set the target manually, either using the inspector or calling the `set_target()` function.
-* You can still use `global_in`, this does not break the y-sorting.
 
 ### Authors
 Lawnjelly, Calinou
