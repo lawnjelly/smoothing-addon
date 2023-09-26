@@ -121,8 +121,23 @@ func _RefreshTransform():
 		_m_Trans_curr = _m_Target.get_transform()
 		
 	_m_Flip = false
-	if (_m_Trans_prev.determinant() < 0) != (_m_Trans_curr.determinant() < 0):
+
+	# Ideally we would use determinant core function, as in commented line below, but we
+	# need to workaround for backward compat.
+	# if (_m_Trans_prev.determinant() < 0) != (_m_Trans_curr.determinant() < 0):
+
+	if (_Determinant_Sign(_m_Trans_prev) != _Determinant_Sign(_m_Trans_curr)):
 		_m_Flip = true
+
+
+func _Determinant_Sign(t:Transform2D)->bool:
+	# Workaround Transform2D determinant function not being available
+	# until 3.6 / 4.1.
+	# We calculate determinant manually, slower but compatible to lower
+	# godot versions.
+	var d = (t.x.x * t.y.y) - (t.x.y * t.y.x)
+	return d >= 0.0
+
 
 func _FindTarget():
 	_m_Target = null
