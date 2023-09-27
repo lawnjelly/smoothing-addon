@@ -39,9 +39,10 @@ var _m_Trans_prev: Transform2D = Transform2D()
 const SF_ENABLED = 1 << 0
 const SF_GLOBAL_IN = 1 << 1
 const SF_GLOBAL_OUT = 1 << 2
-const SF_INVISIBLE = 1 << 3
+const SF_TOP_LEVEL = 1 << 3
+const SF_INVISIBLE = 1 << 4
 
-@export_flags("enabled", "global in", "global out") var flags: int = SF_ENABLED | SF_GLOBAL_IN | SF_GLOBAL_OUT:
+@export_flags("enabled", "global in", "global out", "top level") var flags: int = SF_ENABLED | SF_GLOBAL_IN | SF_GLOBAL_OUT:
 	set(v):
 		flags = v
 		# we may have enabled or disabled
@@ -78,6 +79,7 @@ func is_enabled():
 func _ready():
 	set_process_priority(100)
 	Engine.set_physics_jitter_fix(0.0)
+	set_as_top_level(_TestFlags(SF_TOP_LEVEL))
 
 
 func _SetProcessing():
@@ -87,6 +89,7 @@ func _SetProcessing():
 
 	set_process(bEnable)
 	set_physics_process(bEnable)
+	set_as_top_level(_TestFlags(SF_TOP_LEVEL))
 
 
 func _enter_tree():
@@ -180,7 +183,7 @@ func _process(_delta):
 	if _m_Flip:
 		tr = _m_Trans_curr
 
-	if _TestFlags(SF_GLOBAL_OUT):
+	if _TestFlags(SF_GLOBAL_OUT) and not _TestFlags(SF_TOP_LEVEL):
 		set_global_transform(tr)
 	else:
 		set_transform(tr)
