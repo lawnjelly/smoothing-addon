@@ -1,4 +1,4 @@
-# smoothing-addon v 1.2
+# smoothing-addon v 1.2.1
 Fixed timestep interpolation gdscript addon for Godot 4.x (and later versions)
 
 If you were wondering how to use that new function `Engine.get_physics_interpolation_fraction()` in 3.2, feel free to use this as is, or to get ideas from for your own version. 
@@ -44,6 +44,10 @@ The 3D smoothing node automatically calls `set_as_toplevel()` when in global mod
 
 ### 2D
 The procedure for 2D is pretty much the same as with 3D except you would be using a node derived from Node2D as the physics rep (target) and the 'Smoothing2D' node should be used instead of 'Smoothing'.
+
+In 2D, for legacy support, the smoothing node can be set to `toplevel` if the property flag is enabled (this defaults to disabled). `toplevel` enables the transform of the smoothing node to be specified in true global space (which is more stable, and may play better with GPU snapping), however has two downsides:
+1. Parent node visibility is not automatically propagated to `toplevel` nodes, thus you have to explicitly hide the smoothing node, rather than rely on hiding just the parent node.
+2. Y-sorting does not work correctly for `toplevel` nodes.
 
 ### Following targets that are not the parent node
 Additionally the smoothing node has the ability to follow targets that are not parent nodes. You can do this by assigning a `Target` in the inspector panel for the Smoothing node.
