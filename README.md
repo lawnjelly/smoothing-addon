@@ -1,4 +1,4 @@
-# smoothing-addon v 1.2.1
+# smoothing-addon v 1.2.2
 Fixed timestep interpolation gdscript addon for Godot 4.x (and later versions)
 
 If you were wondering how to use that new function `Engine.get_physics_interpolation_fraction()` in 3.2, feel free to use this as is, or to get ideas from for your own version. 
@@ -33,6 +33,8 @@ In your gameplay programming, 99% of the time you would usually be mostly concer
 ### Note
 The 3D smoothing node automatically calls `set_as_toplevel()` when in global mode. This ensures that it only follows the selected target, rather than having the transform controlled directly by the parent. The default target to follow will however be the parent node, if a `Target` has not been assigned in the inspector.
 
+In 2D, *flips* are supported. That is, if you use negative scaling to flip a sprite, the interpolation will detect this and turn off for a tick to get an instantaneous flip, instead of having the sprite "turn inside out".
+
 ## Usage
 
 ### 3D
@@ -45,12 +47,32 @@ The 3D smoothing node automatically calls `set_as_toplevel()` when in global mod
 ### 2D
 The procedure for 2D is pretty much the same as with 3D except you would be using a node derived from Node2D as the physics rep (target) and the 'Smoothing2D' node should be used instead of 'Smoothing'.
 
-In 2D, for legacy support, the smoothing node can be set to `toplevel` if the property flag is enabled (this defaults to disabled). `toplevel` enables the transform of the smoothing node to be specified in true global space (which is more stable, and may play better with GPU snapping), however has two downsides:
+In 2D, for legacy support, the smoothing node can be set to `toplevel` if the property flag is enabled (this defaults to disabled). `toplevel` enables the transform of the smoothing node to be specified in true global space (which is more stable, and may play better with GPU snapping), and makes things simpler because the smoothing node can be a direct child of a target.
+
+You are recommended to try `toplevel` mode, however there are two downsides which may preclude its use:
 1. Parent node visibility is not automatically propagated to `toplevel` nodes, thus you have to explicitly hide the smoothing node, rather than rely on hiding just the parent node.
 2. Y-sorting does not work correctly for `toplevel` nodes.
 
 ### Following targets that are not the parent node
-Additionally the smoothing node has the ability to follow targets that are not parent nodes. You can do this by assigning a `Target` in the inspector panel for the Smoothing node.
+When not using `toplevel` mode in 2D, and in other problematic situations you may see jitter. In this case you may want to use the smoothing node's ability to follow targets that are not parent nodes. You can do this by assigning a `Target` in the inspector panel for the Smoothing node.
+
+In this situation you are highly recommended to place the smoothing node on a separate branch in the scene tree, preferably inheriting no transform from a parent node (i.e. all the parents and grandparents will have zero translate, no rotate, and 1:1 scale).
+
+e.g. Instead of:
+```
+Root
+    PhysicsRep
+        VisualRep (child of PhysicsRep)
+```
+The relationship becomes:
+```
+Root
+    PhysicsRep
+    VisualRep (child of Root)
+```
+To enable interpolation instead of relying on the scenetree transforms being propagated to children, we specifically tell the VisualRep to follow the PhysicsRep. This way it can follow the position and rotation of the PhysicsRep WITHOUT being directly affected by the transform of the PhysicsRep.
+
+This may sound overly complicated, but because of the maths involved, it is usually essential to getting a good result.
 
 ### Teleporting
 There is one special case when using smoothing nodes - the case when you want a target to instantaneously move from one location to another (for instance respawning a player, or at level start) where you do not want interpolation from the previous position. In this special case, you should move the target node (by setting the translation or position), and then call the 'teleport' function in the Smoothing node. This ensures that interpolation will be switched off temporarily for the move.
@@ -67,8 +89,8 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 
 #### 2D
 1. enabled - as above
-2. global in - will read the global transform of the target instead of local
-3. global out - will set the global transform of the smoothing node instead of local
+5. global in - will read the global transform of the target instead of local
+6. global out - will set the global transform of the smoothing node instead of local
 
 (Local mode may be more efficient but you must understand the difference between local and global transforms.)
 
@@ -87,3 +109,13 @@ Lawnjelly, Calinou
 
 __This addon is also available as a c++ module (slight differences), see:__
 https://github.com/lawnjelly/godot-smooth
+
+### Addendum
+Physics Interpolation is now available in core Godot as of 3.6, and you are encouraged to use core interpolation rather than addons wherever available.
+It should be:
+* Easier to use.
+* Introduces new 2D mode to get around `toplevel` problems.
+* More accurate (particularly for pivots).
+* Faster.
+
+See the official documentation for details.
