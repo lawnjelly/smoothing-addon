@@ -101,6 +101,7 @@ As well as choosing the Target, in the inspector for the Smoothing nodes there a
 * The best way to debug / develop smoothing is to set physics ticks per second (`ProjectSettings->Physics->Common->Physics_FPS`) to a low value (e.g. 10). Once you have it working you can set it back up to high value if desired.
 * If you encounter problems smoothing a `Camera2D` node, try setting the `ProcessMode` to `Idle` instead of `Physics`.
 * In order to prevent an unneeded extra delay of one tick, it is important that smoothing nodes are processed _AFTER_ target nodes. This should now be automatically taken care as the addon internally uses `process_priority` to achieve this. Previously we required smoothing nodes to be placed lower in the scene tree than the target. This should hopefully no longer be the case.
+* Fixed timestep interpolation may not work well in 2D pixel snapped games. For further info see https://github.com/lawnjelly/godot-snapping-demo .
 
 There is no need for JitterFix (`Project Settings->Physics->Common->Physics Jitter Fix`) when using fixed timestep interpolation, indeed it may interfere with getting a good result. The addon now enforces this by setting `Engine.set_physics_jitter_fix` to 0 as smoothing nodes are created.
 
