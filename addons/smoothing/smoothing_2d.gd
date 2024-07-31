@@ -174,10 +174,7 @@ func _HasTarget() -> bool:
 func _process(_delta):
 	var f = Engine.get_physics_interpolation_fraction()
 
-	var tr = Transform2D()
-	tr.origin = lerp(_m_Trans_prev.origin, _m_Trans_curr.origin, f)
-	tr.x = lerp(_m_Trans_prev.x, _m_Trans_curr.x, f)
-	tr.y = lerp(_m_Trans_prev.y, _m_Trans_curr.y, f)
+	var tr = _m_Trans_prev.interpolate_with(_m_Trans_curr, f)
 
 	# When a sprite flip is detected, turn off interpolation for that tick.
 	if _m_Flip:
