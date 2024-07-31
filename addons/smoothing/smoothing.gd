@@ -141,8 +141,8 @@ func _FindTarget():
 	# If no target has been assigned in the property,
 	# default to using the parent as the target.
 	if target.is_empty():
-		var parent = get_parent_node_3d()
-		if parent:
+		var parent = get_parent()
+		if parent and parent is Node3D:
 			_m_Target = parent
 		return
 		
